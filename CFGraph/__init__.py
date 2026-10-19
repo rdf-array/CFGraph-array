@@ -3,7 +3,7 @@ from typing import NamedTuple, Union, Tuple, Optional, Generator
 from rdflib import Graph, URIRef, Literal, BNode, RDF
 from rdflib.collection import Collection
 from rdflib.exceptions import UniquenessError
-from rdflib.term import Node
+from rdflib.term import Node, Sequence
 
 QueryTriple = Tuple[Optional[URIRef], Optional[URIRef], Optional[Union[Literal, URIRef]]]
 
@@ -20,7 +20,12 @@ class RDFTriple(NamedTuple):
 class CFGraph(Graph):
     """ Collection Flattening Graph
 
-    Collections are returned as lists of triples
+    Collections are returned as lists of triples.
+
+    RDF-: a collection ``( ... )`` is one sequence term (rdflib.term.Sequence), so a
+    statement ``s p (e1 e2)`` is returned as ``s p e1`` and ``s p e2``; a sequence
+    object that is an element of another is flattened too.  Legacy rdf:first/rdf:rest
+    ladders are flattened as before.
     """
 
     def __init__(self, *args, **kwargs) -> None:
@@ -39,7 +44,10 @@ class CFGraph(Graph):
             try:
                 self._inside = True
                 for s, p, o in super().triples(pattern):
-                    if o != RDF.nil:
+                    if isinstance(o, Sequence):
+                        for e in _flatten(o):
+                            yield (s, p, e)
+                    elif o != RDF.nil:
                         if p not in (RDF.first, RDF.rest):
                             if isinstance(o, BNode):
                                 if self.value(o, RDF.first, None):
@@ -53,6 +61,13 @@ class CFGraph(Graph):
                             sp = self._list_root(s)
                             if sp:
                                 yield (sp[0], sp[1], o)
+                # RDF-: an object pattern also matches the elements of sequence objects -- as the
+                # rdf:first lookup above does for ladders, only when neither subject nor predicate is given
+                if (pattern[2] is not None and pattern[2] != '' and not isinstance(pattern[2], Sequence)
+                        and pattern[0] in (None, '') and pattern[1] in (None, '')):
+                    for s, p, o in super().triples((pattern[0], pattern[1], None)):
+                        if isinstance(o, Sequence) and pattern[2] in _flatten(o):
+                            yield (s, p, pattern[2])
             finally:
                 self._inside = False
         else:
@@ -74,3 +89,12 @@ class CFGraph(Graph):
 
         except UniquenessError:
             return None
+
+
+def _flatten(seq: Sequence) -> Generator[Node, None, None]:
+    """ RDF-: the elements of a sequence, nested sequences flattened """
+    for e in seq.elements:
+        if isinstance(e, Sequence):
+            yield from _flatten(e)
+        else:
+            yield e
