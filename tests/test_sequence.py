@@ -1,4 +1,4 @@
-""" RDF-: a collection `( ... )` is one sequence term (rdflib.term.Sequence); CFGraph
+""" rdf-array: a collection `( ... )` is one sequence term (rdflib.term.Sequence); CFGraph
 flattens it into one triple per element, nested sequences included, like it does the
 legacy rdf:first/rdf:rest ladders. """
 import unittest

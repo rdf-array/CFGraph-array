@@ -1,6 +1,6 @@
 <img src=".github/rdf-array-logo.png" alt="[CFGraph]" width="96" align="right">
 
-# CFGraph-array: CFGraph for RDF-
+# CFGraph-array: CFGraph for rdf-array
 
 **RDF-** fork of [CFGraph](https://github.com/linkml/CFGraph) for
 [rdflib-array](https://github.com/rdf-array/rdflib-array), where a collection `(1 2 3)` is one
@@ -9,7 +9,7 @@ flattens a sequence object into one triple per element, nested sequences include
 flattens the ladders it was written for (and still does): `<s> <p> (1 (2 3))` reads as `<s> <p> 1`,
 `<s> <p> 2` and `<s> <p> 3`, and a `(None, None, 3)` pattern finds the element's triple as it does
 a ladder member's. PyShEx-array's `shexeval -cf` relies on it;
-[PyShEx-array](https://github.com/rdf-array/PyShEx-array)'s doc/rdf-array.md describes RDF- and
+[PyShEx-array](https://github.com/rdf-array/PyShEx-array)'s doc/rdf-array.md describes rdf-array and
 lists the sibling forks.
 
 ---

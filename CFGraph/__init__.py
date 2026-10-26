@@ -22,7 +22,7 @@ class CFGraph(Graph):
 
     Collections are returned as lists of triples.
 
-    RDF-: a collection ``( ... )`` is one sequence term (rdflib.term.Sequence), so a
+    rdf-array: a collection ``( ... )`` is one sequence term (rdflib.term.Sequence), so a
     statement ``s p (e1 e2)`` is returned as ``s p e1`` and ``s p e2``; a sequence
     object that is an element of another is flattened too.  Legacy rdf:first/rdf:rest
     ladders are flattened as before.
@@ -61,7 +61,7 @@ class CFGraph(Graph):
                             sp = self._list_root(s)
                             if sp:
                                 yield (sp[0], sp[1], o)
-                # RDF-: an object pattern also matches the elements of sequence objects -- as the
+                # rdf-array: an object pattern also matches the elements of sequence objects -- as the
                 # rdf:first lookup above does for ladders, only when neither subject nor predicate is given
                 if (pattern[2] is not None and pattern[2] != '' and not isinstance(pattern[2], Sequence)
                         and pattern[0] in (None, '') and pattern[1] in (None, '')):
@@ -92,7 +92,7 @@ class CFGraph(Graph):
 
 
 def _flatten(seq: Sequence) -> Generator[Node, None, None]:
-    """ RDF-: the elements of a sequence, nested sequences flattened """
+    """ rdf-array: the elements of a sequence, nested sequences flattened """
     for e in seq.elements:
         if isinstance(e, Sequence):
             yield from _flatten(e)
