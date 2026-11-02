@@ -46,3 +46,8 @@ In addition, we impose the restriction:
 * The subject of `rdf:first` or `rdf:rest` is always a blank node.
 
 The output for RDF Collections that do not conform to the above rules is not predictable.
+
+## rdf-undef
+
+Branch `rdf-undef` ([rdf-undef.md](https://github.com/rdf-array/rdf-array/blob/rdf-undef/docs/rdf-undef.md)): an empty slot of a sequence holds nothing, so
+`s p ( 1 undef 3 )` is returned as `s p 1` and `s p 3`. A test is in `tests/test_rdf_undef.py`.

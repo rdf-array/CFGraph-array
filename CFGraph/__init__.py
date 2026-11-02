@@ -3,7 +3,7 @@ from typing import NamedTuple, Union, Tuple, Optional, Generator
 from rdflib import Graph, URIRef, Literal, BNode, RDF
 from rdflib.collection import Collection
 from rdflib.exceptions import UniquenessError
-from rdflib.term import Node, Sequence
+from rdflib.term import Node, Sequence, UNDEF
 
 QueryTriple = Tuple[Optional[URIRef], Optional[URIRef], Optional[Union[Literal, URIRef]]]
 
@@ -92,9 +92,9 @@ class CFGraph(Graph):
 
 
 def _flatten(seq: Sequence) -> Generator[Node, None, None]:
-    """ rdf-array: the elements of a sequence, nested sequences flattened """
+    """ rdf-array: the elements of a sequence, nested sequences flattened; an empty slot has no element to yield """
     for e in seq.elements:
         if isinstance(e, Sequence):
             yield from _flatten(e)
-        else:
+        elif e is not UNDEF:
             yield e
